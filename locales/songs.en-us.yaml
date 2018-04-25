@@ -1,0 +1,6 @@
+- id: "song.created.success"
+  translation: "Song was successfully created."
+- id: "song.updated.success"
+  translation: "Song was successfully updated."
+- id: "song.destroyed.success"
+  translation: "Song was successfully destroyed."

@@ -1,0 +1,20 @@
+[{
+    "topic": "/subscriptions/319a9601-1ec0-0000-aebc-8fe82724c81e/resourceGroups/buffalo-demo/providers/Microsoft.Storage/storageAccounts/musicvotes",
+    "subject": "/blobServices/default/containers/songs/blobs/checktherhyme.mp3",
+    "eventType": "Microsoft.Storage.BlobCreated",
+    "eventTime": "2017-08-16T01:57:26.005121Z",
+    "id": "602a88ef-0001-00e6-1233-1646070610ea",
+    "data": {
+      "api": "PutBlockList",
+      "clientRequestId": "799304a4-bbc5-45b6-9849-ec2c66be800a",
+      "requestId": "602a88ef-0001-00e6-1233-164607000000",
+      "eTag": "0x8D4E44A24ABE7F1",
+      "contentType": "audio/mpeg",
+      "contentLength": 6970507,
+      "blobType": "BlockBlob",
+      "url": "https://musicvotes.blob.core.windows.net/songs/checktherhyme.mp3",
+      "sequencer": "00000000000000EB000000000000C65A"
+    },
+    "dataVersion": "",
+    "metadataVersion": "1"
+  }]

@@ -1,16 +1,21 @@
 package actions
 
 import (
+	"encoding/json"
+	"net/http"
+
+	egdp "github.com/Azure/azure-sdk-for-go/services/eventgrid/2018-01-01/eventgrid"
+	"github.com/Azure/buffalo-azure/sdk/eventgrid"
+
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/buffalo/middleware"
-	"github.com/gobuffalo/buffalo/middleware/ssl"
-	"github.com/gobuffalo/envy"
-	"github.com/unrolled/secure"
-
 	"github.com/gobuffalo/buffalo/middleware/csrf"
 	"github.com/gobuffalo/buffalo/middleware/i18n"
+	"github.com/gobuffalo/buffalo/middleware/ssl"
+	"github.com/gobuffalo/envy"
 	"github.com/gobuffalo/packr"
 	"github.com/marstr/musicvotes/models"
+	"github.com/unrolled/secure"
 )
 
 // ENV is used to help switch settings based on where the
@@ -56,6 +61,22 @@ func App() *buffalo.App {
 
 		app.GET("/", HomeHandler)
 
+		tds := eventgrid.NewTypeDispatchSubscriber(&eventgrid.BaseSubscriber{})
+
+		tds.Bind(
+			"Microsoft.Storage.BlobCreated",
+			func(c buffalo.Context, e eventgrid.Event) error {
+				c.Logger().Debug("Entering anonymous BlobCreated decoder")
+				var payload egdp.StorageBlobCreatedEventData
+				if err := json.Unmarshal(e.Data, &payload); err != nil {
+					return c.Error(http.StatusBadRequest, err)
+				}
+				return IngressBlobCreated(c, e, payload)
+			})
+
+		app.POST("/ingress", tds.Receive)
+
+		app.Resource("/songs", SongsResource{})
 		app.ServeFiles("/", assetsBox) // serve files from the public directory
 	}
 

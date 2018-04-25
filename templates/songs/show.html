@@ -1,0 +1,22 @@
+<div class="page-header">
+  <h1>Song#Show</h1>
+</div>
+
+<ul class="list-unstyled list-inline">
+  <li><a href="<%= songsPath() %>" class="btn btn-info">Back to all Songs</a></li>
+  <li><a href="<%= editSongPath({ song_id: song.ID })%>" class="btn btn-warning">Edit</a></li>
+  <li><a href="<%= songPath({ song_id: song.ID })%>" data-method="DELETE" data-confirm="Are you sure?" class="btn btn-danger">Destroy</a>
+</ul>
+
+<p>
+  <strong>Title</strong>: <%= song.Title %>
+</p>
+<p>
+  <strong>Artist</strong>: <%= song.Artist %>
+</p>
+<p>
+  <strong>Vote</strong>: <%= song.Vote %>
+</p>
+<p>
+  <strong>Url</strong>: <%= song.Url %>
+</p>
