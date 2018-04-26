@@ -94,3 +94,17 @@ func IngressListEvents(c buffalo.Context) error {
 	c.Set("events", ingressCache.List())
 	return c.Render(http.StatusOK, r.HTML("/ingress/index"))
 }
+
+func IngressShowEvent(c buffalo.Context) error {
+	found := false
+	for _, e := range ingressCache.List() {
+		if e.ID == c.Param("event_id") {
+			found = true
+			c.Set("eventData", string(e.Data))
+		}
+	}
+	if found {
+		return c.Render(http.StatusOK, r.HTML("/ingress/show"))
+	}
+	return c.Error(http.StatusNotFound, errors.New("no such event cached"))
+}

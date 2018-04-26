@@ -76,6 +76,7 @@ func App() *buffalo.App {
 
 		app.POST("/ingress", tds.Receive)
 		app.GET("/ingress", IngressListEvents)
+		app.GET("/ingress/{event_id}", IngressShowEvent)
 
 		app.Resource("/songs", SongsResource{})
 		app.ServeFiles("/", assetsBox) // serve files from the public directory
