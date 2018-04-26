@@ -1,0 +1,23 @@
+<div class="page-header">
+    <h1>Recent Events</h1>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <th>ID</th>
+        <th>Time</th>
+        <th>Type</th>
+        <th>Data</th>
+        <th>&nbsp;</th>
+    </thead>
+    <tbody>
+      <%= for (event) in events { %>
+        <tr>
+        <td><%= event.ID %></td>
+          <td><%= event.EventTime %></td>
+          <td><%= event.EventType %></td>
+          <td><%= event.Data %></td>
+        </tr>
+      <% } %>
+    </tbody>
+  </table>

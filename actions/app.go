@@ -6,7 +6,6 @@ import (
 
 	egdp "github.com/Azure/azure-sdk-for-go/services/eventgrid/2018-01-01/eventgrid"
 	"github.com/Azure/buffalo-azure/sdk/eventgrid"
-
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/buffalo/middleware"
 	"github.com/gobuffalo/buffalo/middleware/csrf"
@@ -68,6 +67,7 @@ func App() *buffalo.App {
 			func(c buffalo.Context, e eventgrid.Event) error {
 				c.Logger().Debug("Entering anonymous BlobCreated decoder")
 				var payload egdp.StorageBlobCreatedEventData
+				ingressCache.Add(e)
 				if err := json.Unmarshal(e.Data, &payload); err != nil {
 					return c.Error(http.StatusBadRequest, err)
 				}
@@ -75,6 +75,7 @@ func App() *buffalo.App {
 			})
 
 		app.POST("/ingress", tds.Receive)
+		app.GET("/ingress", IngressListEvents)
 
 		app.Resource("/songs", SongsResource{})
 		app.ServeFiles("/", assetsBox) // serve files from the public directory

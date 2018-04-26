@@ -9,19 +9,23 @@ import (
 	"net/url"
 	"os"
 
-	"github.com/gobuffalo/pop"
-
-	"github.com/mikkyang/id3-go"
-
 	egdp "github.com/Azure/azure-sdk-for-go/services/eventgrid/2018-01-01/eventgrid"
 	"github.com/Azure/azure-storage-blob-go/2016-05-31/azblob"
 	"github.com/Azure/buffalo-azure/sdk/eventgrid"
 	"github.com/gobuffalo/buffalo"
+	"github.com/gobuffalo/pop"
 	"github.com/marstr/musicvotes/models"
+	"github.com/mikkyang/id3-go"
 	"github.com/pkg/errors"
 )
 
+var ingressCache = &eventgrid.Cache{}
+
+// IngressBlobCreated responds to a BlobCreated event by creating a new instance of a song
+// resource.
 func IngressBlobCreated(c buffalo.Context, e eventgrid.Event, payload egdp.StorageBlobCreatedEventData) error {
+	// Validate Arguments
+
 	if payload.URL == nil {
 		return c.Error(http.StatusBadRequest, errors.New("no blob URL was present"))
 	}
@@ -31,18 +35,21 @@ func IngressBlobCreated(c buffalo.Context, e eventgrid.Event, payload egdp.Stora
 		return c.Error(http.StatusBadRequest, fmt.Errorf("%q is not a well formatted URL", *payload.URL))
 	}
 
+	// Prepare server
 	handle, err := ioutil.TempFile("", "musicvotes_song_")
 	if err != nil {
 		return c.Error(http.StatusInternalServerError, errors.New("unable to save blob for ingestion"))
 	}
 	defer os.Remove(handle.Name())
 
+	// Fetch the newly added mpeg file
 	err = DownloadBlob(c, u, handle)
 	if err != nil {
 		return c.Error(http.StatusInternalServerError, fmt.Errorf("unable to download %q", u.String()))
 	}
 	handle.Close()
 
+	// Read the metadata of the newly added song
 	songReader, err := id3.Open(handle.Name())
 	if err != nil {
 		return c.Error(http.StatusInternalServerError, errors.WithStack(fmt.Errorf("unable to parse %q as an audio file", u.String())))
@@ -56,6 +63,7 @@ func IngressBlobCreated(c buffalo.Context, e eventgrid.Event, payload egdp.Stora
 		Url:    u.String(),
 	}
 
+	// Add the song into the database.
 	tx, ok := c.Value("tx").(*pop.Connection)
 	if !ok {
 		return errors.WithStack(errors.New("no transaction found"))
@@ -80,4 +88,9 @@ func DownloadBlob(ctx context.Context, source *url.URL, destination *os.File) er
 	rs := azblob.NewDownloadStream(ctx, blobURL.GetBlob, azblob.DownloadStreamOptions{})
 	_, err := io.Copy(destination, rs)
 	return err
+}
+
+func IngressListEvents(c buffalo.Context) error {
+	c.Set("events", ingressCache.List())
+	return c.Render(http.StatusOK, r.HTML("/ingress/index"))
 }
