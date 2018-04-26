@@ -12,12 +12,12 @@ import (
 
 type Song struct {
 	ID        uuid.UUID `json:"id" db:"id"`
-	CreatedAt time.Time `json:"created_at" db:"created_at"`
-	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
 	Title     string    `json:"title" db:"title"`
 	Artist    string    `json:"artist" db:"artist"`
 	Vote      int       `json:"vote" db:"vote"`
 	Url       string    `json:"url" db:"url"`
+	CreatedAt time.Time `json:"created_at" db:"created_at"`
+	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
 }
 
 // String is not required by pop and may be deleted

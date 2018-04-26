@@ -90,11 +90,13 @@ func DownloadBlob(ctx context.Context, source *url.URL, destination *os.File) er
 	return err
 }
 
+// IngressListEvents displays a List of recently received events.
 func IngressListEvents(c buffalo.Context) error {
 	c.Set("events", ingressCache.List())
 	return c.Render(http.StatusOK, r.HTML("/ingress/index"))
 }
 
+// IngressShowEvent displays details about the content of an Event.
 func IngressShowEvent(c buffalo.Context) error {
 	found := false
 	for _, e := range ingressCache.List() {
