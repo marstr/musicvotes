@@ -1,0 +1,23 @@
+[{
+    "topic": "/subscriptions/319a9601-1ec0-0000-aebc-8fe82724c81e/resourceGroups/buffalo-demo/providers/Microsoft.Storage/storageAccounts/musicvotes",
+    "subject": "/blobServices/default/containers/songs/blobs/checktherhyme.mp3",
+    "eventType": "Microsoft.Storage.BlobCreated",
+    "eventTime": "2018-04-26T07:08:26.813778Z",
+    "id": "602a88ef-0001-00e6-1233-1646070610ea",
+    "data": {
+    "api": "PutBlockList",
+    "clientRequestId": "b43a6e9b-9b2e-4e3a-9d72-740773f7903f",
+    "requestId": "c8d856b6-f01e-008e-022d-dd4502000000",
+    "eTag": "0x8D5AB4481E3EF06",
+    "contentType": "audio/mp3",
+    "contentLength": 9094819,
+    "blobType": "BlockBlob",
+    "url": "https://musicvotes.blob.core.windows.net/songs/09 Maps.mp3",
+    "sequencer": "00000000000000000000000000000A780000000000e4df9b",
+    "storageDiagnostics": {
+      "batchId": "c6298fae-b568-41a1-8088-16be9a572f1f"
+    }
+  },
+    "dataVersion": "",
+    "metadataVersion": "1"
+  }]

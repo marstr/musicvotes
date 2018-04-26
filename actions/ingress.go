@@ -63,6 +63,14 @@ func IngressBlobCreated(c buffalo.Context, e eventgrid.Event, payload egdp.Stora
 		Url:    u.String(),
 	}
 
+	if song.Title == "" {
+		song.Title = "Untitled"
+	}
+
+	if song.Artist == "" {
+		song.Artist = "Unknown Artist"
+	}
+
 	// Add the song into the database.
 	tx, ok := c.Value("tx").(*pop.Connection)
 	if !ok {
@@ -75,7 +83,7 @@ func IngressBlobCreated(c buffalo.Context, e eventgrid.Event, payload egdp.Stora
 	}
 
 	if verrs.HasAny() {
-		return c.Error(http.StatusBadRequest, errors.WithStack(errors.New("song is invalid")))
+		return c.Error(http.StatusBadRequest, errors.WithStack(fmt.Errorf("song is invalid: %v", verrs.Errors)))
 	}
 
 	return c.Render(http.StatusCreated, r.Auto(c, song))
