@@ -11,7 +11,7 @@ ADD yarn.lock .
 RUN yarn install --no-progress
 ADD . .
 RUN dep ensure
-RUN buffalo build --static -o /bin/app
+RUN buffalo build --static --ldflags "-X github.com/marstr/musicvotes/actions.commitID=$(git rev-parse HEAD)" -o /bin/app
 
 FROM alpine
 RUN apk add --no-cache bash
