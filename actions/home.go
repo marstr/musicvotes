@@ -8,7 +8,7 @@ func HomeHandler(c buffalo.Context) error {
 	if commitID == "" {
 		c.Data()["commitID"] = "Unknown Revision"
 	} else {
-		c.Data()["commitID"] = commitID
+		c.Data()["commitID"] = commitID[:6]
 	}
 	return c.Render(200, r.HTML("index.html"))
 }
