@@ -61,6 +61,8 @@ func App() *buffalo.App {
 		ingress := NewIngressSubscriber()
 
 		app.POST("/ingress", eventgrid.SubscriptionValidationMiddleware(ingress.Receive))
+		app.GET("/ingress", ingress.List)
+		app.GET("/ingress/{event_id}", ingress.Show)
 
 		app.Resource("/songs", SongsResource{})
 		app.ServeFiles("/", assetsBox) // serve files from the public directory

@@ -1,6 +1,7 @@
 package actions
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -9,6 +10,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strings"
 
 	"github.com/gobuffalo/pop"
 
@@ -24,6 +26,7 @@ import (
 
 type IngressSubscriber struct {
 	eventgrid.Subscriber
+	cache *eventgrid.Cache
 }
 
 func NewIngressSubscriber() *IngressSubscriber {
@@ -31,12 +34,45 @@ func NewIngressSubscriber() *IngressSubscriber {
 
 	created := &IngressSubscriber{
 		Subscriber: dispatcher,
+		cache:      &eventgrid.Cache{},
 	}
 
 	dispatcher.Bind("Microsoft.Storage.BlobCreated", created.BlobCreated)
 
 	return created
 
+}
+
+func (s *IngressSubscriber) Show(c buffalo.Context) error {
+	eventID := c.Param("event_id")
+	var found bool
+	for _, entry := range s.cache.List() {
+		if strings.EqualFold(eventID, entry.ID) {
+			if c.Logger() != nil {
+				c.Logger().Debug("matching event found")
+			}
+
+			var formatted bytes.Buffer
+			if err := json.Indent(&formatted, entry.Data, "", "\t"); err != nil {
+				return c.Error(http.StatusBadRequest, err)
+			}
+			c.Data()["event"] = entry
+			c.Data()["eventData"] = formatted.String()
+			found = true
+			break
+		}
+	}
+
+	if !found {
+		return c.Error(http.StatusNotFound, errors.New("event not found"))
+	}
+
+	return c.Render(http.StatusOK, r.HTML("ingress/show"))
+}
+
+func (s *IngressSubscriber) List(c buffalo.Context) error {
+	c.Data()["events"] = s.cache.List()
+	return c.Render(http.StatusOK, r.HTML("ingress/index"))
 }
 
 // BlobCreated implements some behavior that should be impleen

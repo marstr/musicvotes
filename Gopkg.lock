@@ -32,7 +32,7 @@
   branch = "master"
   name = "github.com/Azure/buffalo-azure"
   packages = ["sdk/eventgrid"]
-  revision = "536bb590e70f9b7604aa03ab30caa57c5072746e"
+  revision = "402c1c9f9f2100a1df3f1b0e0730fe09dd138783"
 
 [[projects]]
   name = "github.com/Azure/go-autorest"
