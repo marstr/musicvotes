@@ -116,18 +116,26 @@ func (s *IngressSubscriber) BlobCreated(c buffalo.Context, e eventgrid.Event) er
 		Url:    u.String(),
 	}
 
+	if song.Title == "" {
+		song.Title = "Unknown Title"
+	}
+
+	if song.Artist == "" {
+		song.Artist = "Unknown Artist"
+	}
+
 	tx, ok := c.Value("tx").(*pop.Connection)
 	if !ok {
-		return errors.WithStack(errors.New("no transaction found"))
+		return c.Error(http.StatusInternalServerError, errors.New("no transaction found"))
 	}
 
 	verrs, err := tx.ValidateAndCreate(song)
 	if err != nil {
-		return errors.WithStack(err)
+		return c.Error(http.StatusInternalServerError, err)
 	}
 
 	if verrs.HasAny() {
-		return c.Error(http.StatusBadRequest, errors.WithStack(errors.New("song is invalid")))
+		return c.Error(http.StatusBadRequest, fmt.Errorf("song is invalid: %s", verrs.String()))
 	}
 
 	return c.Render(http.StatusCreated, r.Auto(c, song))
